@@ -14,8 +14,6 @@ dem <- raster(paste0(dir,"/Data/SHP/MAR_alt.grd"))
 #ORMVA <- shapefile("C:/Users/Mike/Dropbox/Morocco/Data/ORMVA/ORMVA1.shp")
 
 #
-#
-#
 #par(mfrow=c(2,2))
 #plot(nat_bound)
 #plot(loc_bound)
