@@ -22,6 +22,8 @@ dem <- raster(paste0(dir,"/Data/SHP/MAR_alt.grd"))
 #plot(loc_bound2)
 #plot(loc_bound3)
 
+
+
 #cx <- as.matrix(coordinates(wat_lin))
 
 ### PLOT ADMIN BOUNDARIES
