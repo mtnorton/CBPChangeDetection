@@ -6,17 +6,24 @@ library(sp)
 library(rgdal)
 library(raster)
 
-# Set up directories
+# Set up directories (network drives)
 
-dir_2009 <- "V:\\GIS\\BayPlanimetrics\\TreeCanopyVT\\MD_UTC\\LC_2009\\Prince_Georges_County"
-dir_2013 <- "Y:\\LandCover\\MD\\PRIN_24033"
-landsat_dir <- "X:\\GIS\\CBP_Change_Detection\\_Data\\Landsat Scenes"
-PG_boundaries <- shapefile("X:\\GIS\\PG_County_MD\\_Data\\PG_Boundary.shp")
+#dir_2009 <- "V:\\GIS\\BayPlanimetrics\\TreeCanopyVT\\MD_UTC\\LC_2009\\Prince_Georges_County"
+#dir_2013 <- "Y:\\LandCover\\MD\\PRIN_24033"
+#landsat_dir <- "X:\\GIS\\CBP_Change_Detection\\_Data\\Landsat Scenes"
+#PG_boundaries <- shapefile("X:\\GIS\\PG_County_MD\\_Data\\PG_Boundary.shp")
+
+# Set up directories (local)
+
+setwd("C:\\HR2LS")
 
 # Load LC Datasets
 
-lc2009 <- raster(paste0(dir_2009,"\\landcover_2009_princegeorges_3ft.img"))
-lc2013 <- raster(paste0(dir_2013,"\\PRIN_24033.img"))
+#lc2009 <- raster(paste0(dir_2009,"\\landcover_2009_princegeorges_3ft.img"))
+#lc2013 <- raster(paste0(dir_2013,"\\PRIN_24033.img"))
+
+lc2009 <- raster("landcover_2009_princegeorges_3ft.img")
+lc2013 <- raster("PRIN_24033.img")
 
 # Grab one Landsat scene for CRS
 
@@ -39,7 +46,7 @@ lc13 <- matrix(NA,nrow(landsat) * ncol(landsat),13)
 goplot=FALSE
 par(mfrow=c(2,3),cex.main=1.5,mar=c(4,5,3,0), cex.axis=1.5)
 
-for (i in 1:nrow(landsat))
+for (i in 26:nrow(landsat))
 {
   for (j in 1:ncol(landsat))
   {
@@ -82,7 +89,7 @@ for (i in 1:nrow(landsat))
     
   }
   
-  if (goplot) 
+  if ((goplot) & (i%%3==0))
   {
     plot(lc09[,1],rowSums(lc13[,c(3,10:12)]),col="#008000", pch=19,main="Forest",xlim=c(0,1),ylim=c(0,1),ylab="2013",xlab="")
     abline(a=0,b=1, lty=2)
@@ -92,10 +99,12 @@ for (i in 1:nrow(landsat))
     abline(a=0,b=1, lty=2)
     plot(lc09[,6],lc13[,9],col="#000000", pch=19,main="Roads",xlim=c(0,1),ylim=c(0,1),ylab="2013",xlab="")
     abline(a=0,b=1, lty=2)
+    plot(lc09[,7],lc13[,8],col="#AAAAAA", pch=19,main="Impervious (other)",xlim=c(0,1),ylim=c(0,1),xlab="2009")
+    abline(a=0,b=1, lty=2)
     plot(lc09[,4],lc13[,1],col="#0000FF", pch=19,main="Water",xlim=c(0,1),ylim=c(0,1),xlab="2009")
     abline(a=0,b=1, lty=2)
-    plot(lc09[,3],lc13[,6],col="#805200", pch=19,main="Barren",xlim=c(0,1),ylim=c(0,1),xlab="")
-    abline(a=0,b=1, lty=2)
+    #plot(lc09[,3],lc13[,6],col="#805200", pch=19,main="Barren",xlim=c(0,1),ylim=c(0,1),xlab="")
+    #abline(a=0,b=1, lty=2)
   }
 }
 
