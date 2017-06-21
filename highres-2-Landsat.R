@@ -32,6 +32,7 @@ PG_boundaries_LS <- spTransform(PG_boundaries, crs(landsat))
 landsat <- crop(landsat, PG_boundaries_LS)
 landsat <- mask(landsat, PG_boundaries_LS)
 
+
 landsat09 <- projectRaster(landsat, crs=crs(lc2009))
 landsat13 <- projectRaster(landsat, crs=crs(lc2013))
 
@@ -42,6 +43,9 @@ spts <- rasterToPoints(landsat)
 
 lc09 <- matrix(NA,nrow(landsat) * ncol(landsat),8)
 lc13 <- matrix(NA,nrow(landsat) * ncol(landsat),13)
+
+
+
 
 goplot=FALSE
 par(mfrow=c(2,3),cex.main=1.5,mar=c(4,5,3,0), cex.axis=1.5)
