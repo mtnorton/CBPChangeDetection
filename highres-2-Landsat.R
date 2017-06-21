@@ -19,6 +19,8 @@ setwd("C:\\HR2LS")
 
 # Load LC Datasets
 
+
+
 #lc2009 <- raster(paste0(dir_2009,"\\landcover_2009_princegeorges_3ft.img"))
 #lc2013 <- raster(paste0(dir_2013,"\\PRIN_24033.img"))
 
