@@ -16,6 +16,74 @@ rasterOptions(tmpdir="F:\\HR2LS\\temp")
 setwd("F:\\Landsat7")
 
 
+newExtent <- extent(PG_boundaries_LS)
+
+# List the Landsat scenes
+inputList <- list.files("F:/Landsat7/", pattern="*.tar.gz", full.names=TRUE)
+dirout = "F:/ls_out/"
+
+# Process new landsat scenes for LS7
+processLandsatBatch(x = inputList, outdir = dirout, delete = TRUE, vi = 'ndvi', mask = 'pixel_qa', keep = c(66, 130), e=newExtent, overwrite = TRUE)
+
+# Process new landsat scenes for LS5 and 8 ... from server
+
+inputList <- list.files("W:/CBP_ChangeDetection/_Data/Landsat5_7_8_HLDP_Collection1",pattern=glob2rx("LT05*2008*.tar.gz"), full.names=TRUE)
+processLandsatBatch(x = inputList, outdir = dirout, delete = TRUE, vi = 'ndvi', mask = 'pixel_qa', keep = c(66, 130), e=newExtent, overwrite = TRUE)
+
+inputList <- list.files("W:/CBP_ChangeDetection/_Data/Landsat5_7_8_HLDP_Collection1", pattern=glob2rx("LC08*.tar.gz"), full.names=TRUE)
+processLandsatBatch(x = inputList, outdir = dirout, delete = TRUE, vi = 'ndvi', mask = 'pixel_qa', keep = c(322, 386), e=newExtent, overwrite = TRUE)
+
+#inputList <- list.files("W:/CBP_ChangeDetection/_Data/Landsat5_7_8_HLDP_Collection1",pattern=glob2rx("LT05*2008*.tar.gz"), full.names=TRUE)
+#inputList <- c(inputList,list.files("W:/CBP_ChangeDetection/_Data/Landsat5_7_8_HLDP_Collection1",pattern=glob2rx("LT05*2009*.tar.gz"), full.names=TRUE))
+#inputList <- c(inputList,list.files("W:/CBP_ChangeDetection/_Data/Landsat5_7_8_HLDP_Collection1",pattern=glob2rx("LT05*2010*.tar.gz"), full.names=TRUE))
+#inputList <- c(inputList,list.files("W:/CBP_ChangeDetection/_Data/Landsat5_7_8_HLDP_Collection1",pattern=glob2rx("LT05*2011*.tar.gz"), full.names=TRUE))
+#processLandsatBatch(x = inputList, outdir = dirout, delete = TRUE, vi = 'ndvi', mask = 'pixel_qa', keep = c(66, 130), e=newExtent, overwrite = TRUE)
+
+
+# List the processed NDVI scenes for stacking
+ndviList <- list.files("F:/ls_out/ndvi", pattern='*ndvi.grd', full.names = TRUE)
+dirout2 <- file.path(dirname(rasterTmpFile()), 'stack')
+dir.create(dirout2, showWarnings=FALSE)
+
+# Remove pixel saturation. (values of 20,000 for NDVI)
+for (i in 1:length(ndviList))
+{
+  r <- raster(ndviList[i])
+  g <- length(which(r[]==20000))
+  r[which(r[]==20000)] <- NA
+  writeRaster(r, ndviList[i], overwrite=TRUE)
+  writeLines(paste(g,ndviList[i]))
+}
+
+# Generate a file name for the output stack
+stackName <- file.path(dirout2, 'stackNDVI_path15_row33.grd')
+
+# Stack the layers
+ndviStack <- timeStack(x=ndviList, filename=stackName, datatype='INT2S', overwrite=TRUE)
+notNA <- sum(!is.na(ndviStack))
+
+#bfm <- bfmPixel(ndviStack, start=c(1999,7), interactive=TRUE)
+
+#Define output path
+out <- file.path(dirout2, "bfastNDVI.grd")
+
+
+# remove blank layers and divide into smaller tiles
+
+#Run bfmSpatial
+bfmSpatial(ndviStack, formula = response~trend+harmon, order = 1, history = c(1985, 1), filename = out)
+
+# Or by pixel
+bfm <- bfmPixel(ndviStack, start=c(2009,1), formula = response~harmon, interactive=TRUE) #start=c(2009,1), interactive=TRUE)
+plot(bfm$bfm)
+
+#############################
+# UNNECESSARY????
+#############################
+
+
+
+
 #############################
 # FUNCTIONALITY
 # 1. Untar NDVI and qa_band from tar files
