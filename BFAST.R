@@ -62,13 +62,27 @@ stackName <- file.path(dirout2, 'stackNDVI_path15_row33.grd')
 ndviStack <- timeStack(x=ndviList, filename=stackName, datatype='INT2S', overwrite=TRUE)
 notNA <- sum(!is.na(ndviStack))
 
-#bfm <- bfmPixel(ndviStack, start=c(1999,7), interactive=TRUE)
+writeZ <- getZ(ndviStack)
 
 #Define output path
 out <- file.path(dirout2, "bfastNDVI.grd")
 
-
 # remove blank layers and divide into smaller tiles
+num_layers <- nlayers(ndviStack)
+blank_layers <- 4
+for (i in 5:num_layers)
+{
+  if (all(is.na(as.matrix(ndviStack[[i]]))))
+  {
+    blank_layers <- c(blank_layers,i)
+    writeLines(paste(i,Sys.time()))
+  }
+}
+ndviStack <- ndviStack[[-blank_layers]]
+writeZ <- as.Date(as.vector(writeZ)[-blank_layers])
+setZ(ndviStack, writeZ)
+
+write.csv(writeZ, "f:/ls_temp/z-values.csv")
 
 #Run bfmSpatial
 bfmSpatial(ndviStack, formula = response~trend+harmon, order = 1, history = c(1985, 1), filename = out)
@@ -76,6 +90,22 @@ bfmSpatial(ndviStack, formula = response~trend+harmon, order = 1, history = c(19
 # Or by pixel
 bfm <- bfmPixel(ndviStack, start=c(2009,1), formula = response~harmon, interactive=TRUE) #start=c(2009,1), interactive=TRUE)
 plot(bfm$bfm)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #############################
 # UNNECESSARY????
