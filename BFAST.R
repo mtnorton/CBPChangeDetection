@@ -65,7 +65,7 @@ notNA <- sum(!is.na(ndviStack))
 writeZ <- getZ(ndviStack)
 
 #Define output path
-out <- file.path(dirout2, "bfastNDVI.grd")
+out <- file.path("f:/ls_temp/bfastNDVI_2000.grd")
 
 # remove blank layers and divide into smaller tiles
 num_layers <- nlayers(ndviStack)
@@ -85,7 +85,7 @@ setZ(ndviStack, writeZ)
 write.csv(writeZ, "f:/ls_temp/z-values.csv")
 
 #Run bfmSpatial
-bfmSpatial(ndviStack, formula = response~trend+harmon, order = 1, history = c(1985, 1), filename = out)
+bfmSpatial(ndviStack, start=c(2000,1),formula = response~trend+harmon, order = 1, history = c(1985, 1), filename = out)
 
 # Or by pixel
 bfm <- bfmPixel(ndviStack, start=c(2009,1), formula = response~harmon, interactive=TRUE) #start=c(2009,1), interactive=TRUE)
@@ -96,8 +96,8 @@ plot(bfm$bfm)
 
 
 
-
-
+plot(notNA,breaks=c(250,300,350,400,450,509),col=c("#aaaaaa","#999999","#777777","#555555","#333333","#000000"),xaxt="n",yaxt="n")
+title(main="Number of Landsat pixels in time series",cex.main=2)
 
 
 

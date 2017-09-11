@@ -169,3 +169,12 @@ p6 <- ggplot(df) +
 #print(p + ggtitle("Water and Wetlands"))
 
 multiplot(p1,p2,p3,p4,p5,p6,cols=3)
+
+
+#################################
+
+
+library(raster)
+library(plotKML)
+r <- raster("X:/GIS/Lincoln_Colorado/Analysis/PIMA/SW/classify_SW_1_2.tif")
+r2 <- kml_layer.Raster(r)
